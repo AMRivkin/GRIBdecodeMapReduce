@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 
 
 
-public class Map extends Mapper<NullWritable, BytesWritable, MapKey, Text>{
+public class Map extends Mapper<NullWritable, BytesWritable, Text, Text>{
 
 	
 	private static final Logger log = Logger.getLogger(Map.class.getPackage()
