@@ -45,77 +45,79 @@ public class Decode {
 		
 	
 		if (thisGRIB.isGRIB()) {
-			log.info("This is GRIB");
+			log.info("Это GRIB.");
 		} else {
-			log.info("This is not a GRIB");
+			log.info("Файл не является GRIB файлом.");
 			return null;
 		}
 		
+		log.info("Раздел определения продукции."); //Раздел определения продукции
 		thisGRIB.setLength(new BigInteger(1,readBytes(input, 3)).intValue());
-		log.info("Full GRIB length:" + thisGRIB.getLength()); 
+		log.info("Длина GRIB файла: " + thisGRIB.getLength()); 
 		
 		thisGRIB.setVersion(new BigInteger(1,readBytes(input, 1)).intValue());
-		log.info("GRIB version: " + thisGRIB.getVersion()); 	
+		log.info("Версия GRIB файла: " + thisGRIB.getVersion()); 	
 		
 		thisGRIB.setPart1Length(new BigInteger(1,readBytes(input,	3)).intValue());	
-        log.info("Part1 length:" +thisGRIB.getPart1Length());
+        log.info("Длина раздела определения продукции: " +thisGRIB.getPart1Length());
         
         if (new BigInteger(1,readBytes(input,	1)).intValue() == 2) {
-        	thisGRIB.setInterantional(true); log.info("This is international GRIB");
+        	thisGRIB.setInterantional(true); log.info("Международный обмен.");
         }
         else
         {
-        	thisGRIB.setInterantional(false); log.info("This is not an international GRIB");
+        	thisGRIB.setInterantional(false); log.info("Локальный обмен.");
         }
         
         thisGRIB.setWhereFrom(new BigInteger(1,readBytes(input, 1)).intValue());
-        if (thisGRIB.getWhereFrom() == 4) log.info("This is from Moscow :)");
+        if (thisGRIB.getWhereFrom() == 4) log.info("Файл получен из Москвы :)");
+        if (thisGRIB.getWhereFrom() == 74) log.info("Метеорологическое бюро СК - Брекнелл.");
        
         @SuppressWarnings("unused")
 		byte[] empty = readBytes(input, 1);
              
         thisGRIB.setGridType(new BigInteger(1,readBytes(input, 1)).intValue());
-        log.info("Grid type:" + thisGRIB.getGridType());
+        log.info("Тип сетки: " + thisGRIB.getGridType());
 
 
-          byte[] Flag = readBytes(input,1);
+        byte[] Flag = readBytes(input,1);
           
         thisGRIB.setPart2Included(isSet(Flag, 7));
         thisGRIB.setPart3Included(isSet(Flag, 6));
         
         if (thisGRIB.isPart2Included()) 
-        	log.info("Раздел 2 включен"); 
+        	log.info("Раздел 2 включен."); 
         else 
-        	log.info("Раздел 2 не включен");
+        	log.info("Раздел 2 не включен.");
         
         if (thisGRIB.isPart3Included()) 
-       	 	log.info("Раздел 3 включен"); 
+       	 	log.info("Раздел 3 включен."); 
        else 
-       		log.info("Раздел 3 не включен");
+       		log.info("Раздел 3 не включен.");
        
 
         int UkazParam = new BigInteger(1,readBytes(input,1)).intValue(); 
 
         if (UkazParam == 33)
         {
-             log.info("komponent vetra u");
+             log.info("Файл содержит компонент ветра U.");
              thisGRIB.setHasWindComponent_U(true);
              thisGRIB.setHasWindComponent_V(false);
         }
         if (UkazParam == 34)
         {
-             log.info("komponent vetra v");
+             log.info("Файл содержит компонент ветра V.");
              thisGRIB.setHasWindComponent_U(false);
              thisGRIB.setHasWindComponent_V(true);
         }
 
         thisGRIB.setLevelType(new BigInteger(1,readBytes(input,1)).intValue()); 
         if (thisGRIB.getLevelType() == 100)
-             log.info("Izobaricheska poverxnost");
+             log.info("Тип уровня - изобарическая поверхность.");
 
         
         thisGRIB.setLevel(new BigInteger(1,readBytes(input,2)).intValue());
-        log.info("Высота "+thisGRIB.getLevel());
+        log.info("Высота: "+thisGRIB.getLevel());
 
         //дата
 
@@ -129,32 +131,32 @@ public class Decode {
          thisGRIB.setUnitOfTimeIndex(new BigInteger(1,readBytes(input,1)).intValue());
 
         if (thisGRIB.getUnitOfTimeIndex() == 1)
-             log.info("Указатель ед времени: Час");
+             log.info("Указатель единицы времени: Час");
         else
         {
-             log.info("Указатель ед времени: " + thisGRIB.getUnitOfTimeIndex());
+             log.info("Указатель единицы времени: " + thisGRIB.getUnitOfTimeIndex());
         }
         
         
         
          thisGRIB.setP1(new BigInteger(1,readBytes(input,1)).intValue());
-         log.info("P1 " + thisGRIB.getP1());
+         log.info("P1 - период времени: " + thisGRIB.getP1());
          
          thisGRIB.setP2(new BigInteger(1,readBytes(input,1)).intValue());
-         log.info("P2 " + thisGRIB.getP2());
+         log.info("P2 - период времени: " + thisGRIB.getP2());
 
          thisGRIB.setTimePointer(new BigInteger(1,readBytes(input,1)).intValue());
-         log.info("Указатель времени " + thisGRIB.getTimePointer());
+         log.info("Указатель времени: " + thisGRIB.getTimePointer());
 
          
          thisGRIB.setNumberOfCases(new BigInteger(1,readBytes(input,2)).intValue());
-         log.info("Число случаев " + thisGRIB.getNumberOfCases());
+         log.info("Число случаев: " + thisGRIB.getNumberOfCases());
 
          thisGRIB.setNumberOfCasesLost(new BigInteger(1,readBytes(input,1)).intValue());
-         log.info("Число случаев утраченных " + thisGRIB.getNumberOfCasesLost());
+         log.info("Число утраченных случаев: " + thisGRIB.getNumberOfCasesLost());
 
          thisGRIB.setCentury((new BigInteger(1,readBytes(input,1)).intValue()));
-         log.info("Век " + thisGRIB.getCentury());
+         log.info("Век: " + thisGRIB.getCentury());
          
          DateFormat dateFormat = new SimpleDateFormat("HH:mm dd.MM.yyyy");
          Date date = null;
@@ -165,87 +167,93 @@ public class Decode {
 		}		
          
          thisGRIB.setDate(date);
-         log.info("Время подготовки данных  "+ thisGRIB.getDate()); 
+         log.info("Время подготовки данных: "+ thisGRIB.getDate()); 
 
          thisGRIB.setSubcenterPointer((new BigInteger(1,readBytes(input,1)).intValue()));
-         log.info("Указатель Подцентра " + thisGRIB.getSubcenterPointer());
+         log.info("Указатель подцентра: " + thisGRIB.getSubcenterPointer());
 
        
         thisGRIB.setD((new BigInteger(1,readBytes(input,2)).intValue()));
-         log.info("Масштабный коэффициент " + thisGRIB.getD());
+         log.info("Масштабный коэффициент: " + thisGRIB.getD());
 
-         log.info("Part2"); //Раздел описания сетки
+         log.info("Раздел описания сетки."); //Раздел описания сетки
          int p2l = 0;
          
          thisGRIB.setPart2Length((new BigInteger(1,readBytes(input,3)).intValue())); p2l=p2l-3;
-         log.info("Part2 length:" + thisGRIB.getPart2Length()); p2l = p2l + thisGRIB.getPart2Length();
+         log.info("Длина раздела описания сетки: " + thisGRIB.getPart2Length()); p2l = p2l + thisGRIB.getPart2Length();
 
         thisGRIB.setVerticalCoordParamsCount(new BigInteger(1,readBytes(input,1)).intValue()); p2l--;
-         log.info("Количесвто параметров вертикальной координаты " + thisGRIB.getVerticalCoordParamsCount());
+         log.info("Количесвто параметров вертикальной координаты: " + thisGRIB.getVerticalCoordParamsCount());
 
         thisGRIB.setPV(readBytes(input,1)[0]);p2l--;
         if (thisGRIB.getPV() == -1)
              log.info("Нету ни одного местоположения перечня парам. вертик. коорд.");
         else
         {
-             log.info("Местоположение перечня парамаетров вертикальной координаты " + thisGRIB.getPV());
+             log.info("Местоположение перечня парамаетров вертикальной координаты: " + thisGRIB.getPV());
         }
 
         
         thisGRIB.setDataType(new BigInteger(1,readBytes(input,1)).intValue()); p2l--;
         if (thisGRIB.getDataType() == 0)
-             log.info("Тип данных: Широтно-долготная сетка");
+             log.info("Тип данных: Широтно-долготная сетка.");
         else
         {
-             log.info("Тип данных " + thisGRIB.getDataType());
+             log.info("Тип данных: " + thisGRIB.getDataType());
         }
 
 
         thisGRIB.setParallelPointsCount(new BigInteger(1,readBytes(input,2)).intValue()); p2l=p2l -2;
-         log.info("Количество точек вдоль параллели " +   thisGRIB.getParallelPointsCount());
+        if (thisGRIB.getParallelPointsCount() == 65535)   thisGRIB.setParallelPointsCount(-1);
+        
+         log.info("Количество точек вдоль параллели: " +   thisGRIB.getParallelPointsCount());
 
         thisGRIB.setMeridianPointsCountl(new BigInteger(1,readBytes(input,2)).intValue()); p2l=p2l -2;
-         log.info("Количество точек вдоль меридиана " + thisGRIB.getMeridianPointsCountl());
+         log.info("Количество точек вдоль меридиана: " + thisGRIB.getMeridianPointsCountl());
 
         thisGRIB.setFirstPointLatitude(new BigInteger(1,readBytes(input,3)).intValue());p2l=p2l -3;
-         log.info("широта первой точки сетки " + thisGRIB.getFirstPointLatitude());
+         log.info("Широта первой точки сетки: " + thisGRIB.getFirstPointLatitude());
 
         thisGRIB.setFirstPointLongitude(new BigInteger(1,readBytes(input,3)).intValue());p2l=p2l -3;
-         log.info("Долгота первой точки сетки " + thisGRIB.getFirstPointLongitude());
+         log.info("Долгота первой точки сетки: " + thisGRIB.getFirstPointLongitude());
 
         byte[] Flag2 = readBytes(input,1);p2l--;
 
         thisGRIB.setIncrementsInTheDirectionsAreGiven(isSet(Flag2,7));
     
         if (thisGRIB.isIncrementsInTheDirectionsAreGiven())
-             log.info("Приращения по направлениям даются");
+             log.info("Приращения по направлениям даются.");
         else
-        {  log.info("Приращения по направлениям не даются"); }
+        {  log.info("Приращения по направлениям не даются."); }
         
         thisGRIB.setEarthSpheroid(isSet(Flag2, 6));
         if (thisGRIB.isEarthSpheroid())
-             log.info("Земля - сфероид");
+             log.info("Земля - сфероид.");
         else
-        {  log.info("Земля - Шар"); }
+        {  log.info("Земля - Шар."); }
         
         thisGRIB.setDesignedWithRespectToTheReferenceGrid(isSet(Flag2, 3));
         
         if (thisGRIB.isDesignedWithRespectToTheReferenceGrid())
-             log.info("Спроект компоненты векторных велечин u и v относит опр сетки");
+             log.info("Спроектированне компоненты векторных велечин u и v относительно определенно сетки в направлениях увеличения соответственно координаты x и y");
         else
-        {  log.info("Спроект компоненты вект велечин u и v относ восточн и северн напр"); }
+        {  log.info("Спроект компоненты вект велечин u и v относительно восточного и северного направлений"); }
 
         thisGRIB.setLastPointLatitude(new BigInteger(1,readBytes(input,3)).intValue()); p2l=p2l -3;
-         log.info("широта последней точки сетки " + thisGRIB.getLastPointLatitude());
+         log.info("Широта последней точки сетки: " + thisGRIB.getLastPointLatitude());
 
         thisGRIB.setLastPointLongitude(new BigInteger(1,readBytes(input,3)).intValue()); p2l=p2l -3;
-         log.info("Долгота последней точки сетки " + thisGRIB.getLastPointLongitude());
+         log.info("Долгота последней точки сетки: " + thisGRIB.getLastPointLongitude());
 
         thisGRIB.setDi(new BigInteger(1,readBytes(input,2)).intValue()); p2l=p2l -2;
-         log.info("Приращение в направлении i " + thisGRIB.getDi());
+        if (thisGRIB.getDi() == 65535)   thisGRIB.setDi(-1);
+        
+        log.info("Приращение в направлении i: " + thisGRIB.getDi());
+         
+    
 
          thisGRIB.setDj(new BigInteger(1,readBytes(input,2)).intValue()); p2l=p2l -2;
-         log.info("Приращение в направлении j " + thisGRIB.getDj());
+         log.info("Приращение в направлении j: " + thisGRIB.getDj());
 
         byte[] Flag3 = readBytes(input,1); p2l--;
 
@@ -253,21 +261,21 @@ public class Decode {
         thisGRIB.setScanToMinusI(isSet(Flag3, 7));
         
         if (thisGRIB.isScanToMinusI())
-             log.info("Сканирование в направлении -i");
+             log.info("Сканирование в направлении -i.");
         else
-        {  log.info("Сканирование в направлении +i"); }
+        {  log.info("Сканирование в направлении +i."); }
         thisGRIB.setScanToPlusJ(isSet(Flag3, 6));        
         
         if (thisGRIB.isScanToPlusJ())
-             log.info("Сканирование в направлении +j");
+             log.info("Сканирование в направлении +j.");
         else
-        	{  log.info("Сканирование в направлении -j"); }
+        	{  log.info("Сканирование в направлении -j."); }
         
         thisGRIB.setNeighborPointsInDirectionIareConsecutive(isSet(Flag3, 5));
         if (thisGRIB.isNeighborPointsInDirectionIareConsecutive())
-             log.info("Соседние точки в напр j являются последовательными");
+             log.info("Соседние точки в направлении j являются последовательными.");
         else
-        {  log.info("Соседние точки в напр i являются последовательными"); }
+        {  log.info("Соседние точки в направлении i являются последовательными."); }
 
 
 
@@ -277,9 +285,9 @@ public class Decode {
         
         
 
-         log.info("Part4");
+         log.info("Раздел двоичных данных.");
          thisGRIB.setPart4Length(new BigInteger(1,readBytes(input, 3)).intValue());
-         log.info("Overal Part4 length:" + thisGRIB.getPart4Length());
+         log.info("Длина раздела двоичных данных: " + thisGRIB.getPart4Length());
 
 
 
@@ -290,28 +298,28 @@ public class Decode {
         thisGRIB.setDataByPointsOfGrib(!isSet(Flag5, 7));
 
         if (thisGRIB.isCoeffOfSphericalHarminicFunction())
-             log.info("Коэффициенты сферических гармонических функций");
+             log.info("Коэффициенты сферических гармонических функций.");
         if (thisGRIB.isDataByPointsOfGrib())
-        {  log.info("Данные по точкам сетки"); }
+        {  log.info("Данные по точкам сетки."); }
         
         thisGRIB.setSimplePackage(!isSet(Flag5, 6));        
         if (thisGRIB.isSimplePackage())
-        	log.info("Простая упаковка"); 
+        	log.info("Простая упаковка."); 
         else
-        {  log.info("Сложная упаковка");}
+        {  log.info("Сложная упаковка.");}
         
         thisGRIB.setInt(isSet(Flag5, 5));
         
         if (thisGRIB.isInt())
-             log.info("Представлены целые числа");
+             log.info("Представлены целые числа.");
         else
-        {  log.info("Представлены велечины с плавающей запятой"); }
+        {  log.info("Представлены величины с плавающей запятой."); }
         
         thisGRIB.setAdditionalFlagBits(isSet(Flag5, 4));
         if (thisGRIB.isAdditionalFlagBits())
-             log.info("Есть дополнительные биты флагов");
+             log.info("Есть дополнительные биты флагов.");
         else
-        {  log.info("Нет дополнительных флагов"); }
+        {  log.info("Нет дополнительных флагов."); }
 
         byte[] mashKo = readBytes(input, 2);
         new BitSet();
@@ -357,7 +365,7 @@ public class Decode {
         }
 
        thisGRIB.setScallingFactor(E);
-        log.info("Масштабный коэффициент " + thisGRIB.getScallingFactor());
+        log.info("Масштабный коэффициент: " + thisGRIB.getScallingFactor());
         
         byte[] NOU = readBytes(input, 4);
         new BitSet();
@@ -406,17 +414,16 @@ public class Decode {
 
         thisGRIB.setScanBegin(R); 
         
-         log.info("Начало отсчета " +thisGRIB.getScanBegin());
+         log.info("Начало отсчета: " +thisGRIB.getScanBegin());
 
 
         thisGRIB.setDataPackageLength(new BigInteger(1,readBytes(input, 1)).intValue());
-         log.info("Кол-во бит, содерж каждую пакетную велечину " + thisGRIB.getDataPackageLength());
+         log.info("Количество бит, содержащих каждую пакетную велечину: " + thisGRIB.getDataPackageLength());
 
-        double E1 = Math.exp(thisGRIB.getScallingFactor() * Math.log(2));//Вычисление 2 в степени E
-        double D1 = Math.exp(thisGRIB.getD() * Math.log(10)); //Вычисление 10 в степени D
-        int kol = thisGRIB.getParallelPointsCount() * thisGRIB.getMeridianPointsCountl(); //Колличество точек сетки
-     
-        log.info("Колличество точек сетки " + kol);
+        double E1 = Math.pow(2,thisGRIB.getScallingFactor());//Вычисление 2 в степени E
+        double D1 = Math.pow(10, thisGRIB.getD()); //Вычисление 10 в степени D
+        @SuppressWarnings("unused")
+		int kol = thisGRIB.getParallelPointsCount() * thisGRIB.getMeridianPointsCountl(); //Колличество точек сетки
         
         
         byte[] DataBytes = readBytes(input, thisGRIB.getPart4Length() - 11);        
@@ -433,53 +440,43 @@ public class Decode {
         for (int i=0; i< data.length; i++) {  
         	
         	code = new BigInteger(1,DataBits.get(startBit, endBit).toByteArray()).intValue();
-        	data[i] = (R + code + E1)/ D1;            // Расчет значения по формуле
+        	data[i] = (R + code * E1)/ D1;            // Расчет значения по формуле
         	startBit = endBit;
             endBit = startBit + thisGRIB.getDataPackageLength()-1;        	
 		}
 
         int p = 0;
+        
+        if (thisGRIB.getDj() == -1 ) thisGRIB.setDj(thisGRIB.getDi());
+        if (thisGRIB.getDi() == -1 ) thisGRIB.setDi(thisGRIB.getDj());
 
-        int Xu = thisGRIB.getFirstPointLongitude();
-        int Yu = thisGRIB.getFirstPointLatitude();
-
-
-
-        for (int zy = 0; zy < thisGRIB.getMeridianPointsCountl(); zy++) //проход по сетке 
-        {
-            Xu = thisGRIB.getFirstPointLongitude();
-
-            for (int zx = 0; zx < thisGRIB.getParallelPointsCount(); zx++)
+        for (int Yu = thisGRIB.getFirstPointLatitude(); Yu < thisGRIB.getLastPointLatitude(); Yu=Yu+thisGRIB.getDj()) //проход по сетке 
+        {   
+            for (int  Xu = thisGRIB.getFirstPointLongitude(); Xu < thisGRIB.getLastPointLongitude(); Yu=Yu+thisGRIB.getDi())
             {
 
-                if (p == data.length) break;
-                GRIB grib = new GRIB(Xu, Yu, data[p]);
+            	if (p == data.length) break;            	
             
+            	GRIB grib = new GRIB(Xu, Yu, data[p]);            	
+            	
                 grib.setDate(date);
                 if (thisGRIB.isHasWindComponent_U())  grib.setType("U");
                 if (thisGRIB.isHasWindComponent_V())  grib.setType("V");
                 grib.setHeight(thisGRIB.getLevel());
                 grib.setForecast(thisGRIB.getP1());
-                //OBD.V = ZNv[p];
-                //OBD.U = ZNu[p];
-                //OBD.HIGHT = fileU.urov;
-                //OBD.FORECAST = fileU.forecast;
-                //OBD.DATE_IN = fileU.Date_f;
-                p++;
-                Xu = Xu + thisGRIB.getDi();
+
+                p++;              
                 if (Xu == 360000) Xu = Xu - 360000;
                 thisGRIB.getData().add(grib);
-                //RESULTu.Add(OBD);
-                //Массив результатов
-                //Выход по достижению последней точки
 
-            }
 
-            Yu = Yu + thisGRIB.getDj(); //ПРОВЕРИТЬ! Везде 0
+            }         
+           
             if (Yu == 360000) Yu = Yu - 360000;
         }
-        log.info("Колличество точек сетки " + thisGRIB.getData().size());
+        log.info("Колличество точек сетки: " + thisGRIB.getData().size());
         input.close();
+        
 		return thisGRIB;
         
         

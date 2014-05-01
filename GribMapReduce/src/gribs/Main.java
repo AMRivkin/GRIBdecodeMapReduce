@@ -2,6 +2,8 @@ package gribs;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +35,9 @@ public class Main extends Configured implements Tool{
 
 	public static void main(String[] args) throws Exception {
 
-		//File gribFile = new File("C:\\Users\\arivkin\\Documents\\ÄÄ\\gribFiles\\HUJK70_EGRR_301200.dat");
+		//java.nio.file.Path gribFile = Paths.get("C:\\Users\\arivkin\\Documents\\ÄÄ\\gribFiles\\HUJK70_EGRR_301200.dat");
 		
-		//Map.BeginDecode(gribFile);
+		//Decode.BeginDecode(Files.readAllBytes(gribFile),gribFile.getFileName().toString());
 		
 		int res = ToolRunner.run(new Configuration(), new Main(), args);
 		System.exit(res);
