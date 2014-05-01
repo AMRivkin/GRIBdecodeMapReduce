@@ -71,6 +71,7 @@ public class Main extends Configured implements Tool{
 			return job.waitForCompletion(true) ? 0 : 1;	
 			}
 			else
+				System.out.println("Enter path");
 				return 1;
 		}
 		
