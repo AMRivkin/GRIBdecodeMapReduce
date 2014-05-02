@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="C:/Users/arivkin/git/GRIBdecodeMapReduce/GribMapReduce/src/lib/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/arivkin/git/GRIBdecodeMapReduce/GribMapReduce/src/lib/guava-11.0.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/arivkin/git/GRIBdecodeMapReduce/GribMapReduce/src/lib/hadoop-core-2.0.0-mr1-cdh4.4.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/arivkin/git/GRIBdecodeMapReduce/GribMapReduce/src/lib/kvclient.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

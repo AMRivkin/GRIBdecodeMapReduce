@@ -1,36 +1,34 @@
 package gribs;
 
 import java.io.IOException;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.NullWritable;
+
+import oracle.kv.Key;
+import oracle.kv.Value;
+
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.log4j.Logger;
 
 
 
-public class Map extends Mapper<NullWritable, BytesWritable, Text, Text>{
+public class Map extends Mapper<Text, Text, Text, Text>{
 
 	
 	private static final Logger log = Logger.getLogger(Map.class.getPackage()
 			.getName());
 	
-	public void map(NullWritable key, BytesWritable value, Context context) throws IOException, InterruptedException 
-	{		
-		//get GRIB	
-		Path filePath= ((FileSplit)context.getInputSplit()).getPath();
-		long fileSizeLong= ((FileSplit)context.getInputSplit()).getLength();		
-		
-		String fileNameString = filePath.getName();
+    public void map(Text keyArg, Text valueArg, Context context)
+            throws IOException, InterruptedException {
 
-		log.info("FILEPATH: "+filePath.toString());
-		log.info("FILESIZE: "+fileSizeLong);			
+            Key key = Key.fromString(keyArg.toString());
+            log.info("KEY: "+key.toString());            	
+            Value value = Value.createValue(valueArg.toString().getBytes());//???
+            log.info("VALUE: "+valueArg.getBytes());
+            log.info("VALUE: "+valueArg.toString().getBytes());
 
 		//decode grib
 		
-		Structure thisGrib = Decode.BeginDecode(value.copyBytes(),fileNameString);
+		Structure thisGrib = Decode.BeginDecode(value.toByteArray(),key.getMinorPath().toString());
 
 		//get list of data
 		for(GRIB element : thisGrib.getData())
