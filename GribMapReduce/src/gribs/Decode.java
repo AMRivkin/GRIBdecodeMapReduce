@@ -492,11 +492,6 @@ public class Decode {
         if (thisGRIB.getDj() == -1 ) thisGRIB.setDj(thisGRIB.getDi());
         if (thisGRIB.getDi() == -1 ) thisGRIB.setDi(thisGRIB.getDj());
         
-        
-
-
-        	
-
         int  Yu = thisGRIB.getFirstPointLatitude();
         int  Xu = thisGRIB.getFirstPointLongitude();
         
