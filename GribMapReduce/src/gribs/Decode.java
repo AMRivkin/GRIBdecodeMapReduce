@@ -21,7 +21,7 @@ public class Decode {
 	
 
 	public static Structure BeginDecode(byte[] gribFile,String filename) throws IOException {
-
+		
 		InputStream input = new ByteArrayInputStream (gribFile);
 		Structure thisGRIB = new Structure(filename);
 		
@@ -211,10 +211,31 @@ public class Decode {
         thisGRIB.setMeridianPointsCountl(new BigInteger(1,readBytes(input,2)).intValue()); p2l=p2l -2;
          log.info(" оличество точек вдоль меридиана: " + thisGRIB.getMeridianPointsCountl());
 
-        thisGRIB.setFirstPointLatitude(new BigInteger(1,readBytes(input,3)).intValue());p2l=p2l -3;
-         log.info("Ўирота первой точки сетки: " + thisGRIB.getFirstPointLatitude());
+         
+         Flag = readBytes(input,3);  
+         BitSet tempSet =  BitSet.valueOf(Flag);
+         int tempInt = 1;
+         
+         if ( tempSet.get(7) == true ) //бит 1 обозначает южную широту
+         {
+         	tempSet.set(7,false);
+         	tempInt = -1;         			
+         }
+        thisGRIB.setFirstPointLatitude(new BigInteger(1,tempSet.toByteArray()).intValue()*tempInt);p2l=p2l -3;
+        log.info("Ўирота первой точки сетки: " + thisGRIB.getFirstPointLatitude());
 
-        thisGRIB.setFirstPointLongitude(new BigInteger(1,readBytes(input,3)).intValue());p2l=p2l -3;
+         
+         Flag = readBytes(input,3);  
+         tempSet =  BitSet.valueOf(Flag);
+         tempInt =1;
+         
+         if ( tempSet.get(7) == true )//бит 1 обозначает западную долготу
+         {
+         	tempSet.set(7,false);
+         	tempInt = -1;         			
+         }
+        	
+        thisGRIB.setFirstPointLongitude(new BigInteger(1,tempSet.toByteArray()).intValue()*tempInt);p2l=p2l -3;
          log.info("ƒолгота первой точки сетки: " + thisGRIB.getFirstPointLongitude());
 
         byte[] Flag2 = readBytes(input,1);p2l--;
@@ -239,10 +260,31 @@ public class Decode {
         else
         {  log.info("—проект компоненты вект велечин u и v относительно восточного и северного направлений"); }
 
-        thisGRIB.setLastPointLatitude(new BigInteger(1,readBytes(input,3)).intValue()); p2l=p2l -3;
+        
+        Flag = readBytes(input,3);  
+        tempSet =  BitSet.valueOf(Flag);
+        tempInt =1;
+        
+        if ( tempSet.get(7) == true )//бит 1 обозначает южную широту
+        {
+        	tempSet.set(7,false);
+        	tempInt = -1;         			
+        }
+        
+        thisGRIB.setLastPointLatitude(new BigInteger(1,tempSet.toByteArray()).intValue()*tempInt); p2l=p2l -3;
          log.info("Ўирота последней точки сетки: " + thisGRIB.getLastPointLatitude());
-
-        thisGRIB.setLastPointLongitude(new BigInteger(1,readBytes(input,3)).intValue()); p2l=p2l -3;
+         
+         Flag = readBytes(input,3);  
+         tempSet =  BitSet.valueOf(Flag);
+         tempInt =1;
+         
+         if ( tempSet.get(7) == true )//бит 1 обозначает западную долготу
+         {
+         	tempSet.set(7,false);
+         	tempInt = -1;         			
+         }
+        	
+        thisGRIB.setLastPointLongitude(new BigInteger(1,tempSet.toByteArray()).intValue()*tempInt); p2l=p2l -3;
          log.info("ƒолгота последней точки сетки: " + thisGRIB.getLastPointLongitude());
 
         thisGRIB.setDi(new BigInteger(1,readBytes(input,2)).intValue()); p2l=p2l -2;
@@ -449,12 +491,27 @@ public class Decode {
         
         if (thisGRIB.getDj() == -1 ) thisGRIB.setDj(thisGRIB.getDi());
         if (thisGRIB.getDi() == -1 ) thisGRIB.setDi(thisGRIB.getDj());
+        
+        int  Yu = thisGRIB.getFirstPointLatitude();
+        int  Xu = thisGRIB.getFirstPointLongitude();
+        
+        int roundY = 0;
+        int roundX = 0;
+        if (thisGRIB.getLastPointLatitude()<thisGRIB.getFirstPointLatitude()) roundY= 90000;
+        if (thisGRIB.getLastPointLongitude()<thisGRIB.getFirstPointLongitude()) roundX= 360000;
+        
+        int Ycmax = (thisGRIB.getLastPointLatitude() - Yu + roundY) / thisGRIB.getDj();       
+        int Xcmax = (thisGRIB.getFirstPointLongitude() - Xu + roundX) / thisGRIB.getDi(); 
+        
 
-        for (int Yu = thisGRIB.getFirstPointLatitude(); Yu < thisGRIB.getLastPointLatitude(); Yu=Yu+thisGRIB.getDj()) //проход по сетке 
+        
+        	
+        for (int Ycount = 0; Ycount<= Ycmax; Ycount++) //проход по сетке 
         {   
-            for (int  Xu = thisGRIB.getFirstPointLongitude(); Xu < thisGRIB.getLastPointLongitude(); Yu=Yu+thisGRIB.getDi())
+            for (int  Xcount = 0; Xcount <=Xcmax; Xcount++)
             {
 
+            	
             	if (p == data.length) break;            	
             
             	GRIB grib = new GRIB(Xu, Yu, data[p]);            	
@@ -465,14 +522,16 @@ public class Decode {
                 grib.setHeight(thisGRIB.getLevel());
                 grib.setForecast(thisGRIB.getP1());
 
-                p++;              
+                p++;            
+                Xu=Xu+thisGRIB.getDi();
                 if (Xu == 360000) Xu = Xu - 360000;
                 thisGRIB.getData().add(grib);
 
 
             }         
            
-            if (Yu == 360000) Yu = Yu - 360000;
+            Yu=Yu+thisGRIB.getDj();
+            if (Yu == 90000) Yu = Yu - 90000;
         }
         log.info(" олличество точек сетки: " + thisGRIB.getData().size());
         input.close();
