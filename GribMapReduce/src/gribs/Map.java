@@ -50,8 +50,6 @@ public class Map extends Mapper<Text, Text, Text, Text>{
     		}    
             
         
-	
-	
 	}
 	public static String bytesToHex(byte[] bytes) {
 		char[] hexArray = "0123456789ABCDEF".toCharArray();	
