@@ -1,6 +1,8 @@
 package gribs;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -28,21 +30,28 @@ public class Map extends Mapper<NullWritable, BytesWritable, MapKey, Text>{
 		log.info("FILEPATH: "+filePath.toString());
 		log.info("FILESIZE: "+fileSizeLong);			
 
-		//decode grib
-		
-		Structure thisGrib = Decode.BeginDecode(value.copyBytes(),fileNameString);
 
-		//get list of data
-		for(GRIB element : thisGrib.getData())
-		{
-			log.info("Coordinate X: "+element.getCoordX() + " Coordinate Y: "+element.getCoordY());
-			log.info("Height: "+element.getHeight());
-			log.info("Type: "+element.getType());
-			log.info("Value: "+element.getValue());
-			log.info("===================================");			
+		 byte[] gribEnd = new byte[]{(byte)0x37,(byte)0x37,(byte)0x37,(byte)0x37}; //7777
 
-		}
+	        ArrayList<byte[]> gribs = Utils.splitGRIB(value.copyBytes(), gribEnd);
+					
+			for (byte[] gribBytes : gribs) {
+				
+				Structure thisGrib = Decode.BeginDecode(gribBytes,fileNameString);
 
+				log.info("======================GRIB=====================");
+				//get list of data
+				for(GRIB element : thisGrib.getData())
+				{
+					log.info("Coordinate X: "+element.getCoordX() + " Coordinate Y: "+element.getCoordY());
+					log.info("Height: "+element.getHeight());
+					log.info("Type: "+element.getType());
+					log.info("Value: "+element.getValue());
+					log.info("===================================");			
+
+				}
+
+			}    
 	
 	
 	}
