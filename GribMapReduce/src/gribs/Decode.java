@@ -22,6 +22,8 @@ public class Decode {
 
 	public static Structure BeginDecode(byte[] gribFile,String filename) throws IOException {
 		
+		//StringBuilder log = new StringBuilder();
+		
 		InputStream input = new ByteArrayInputStream (gribFile);
 		Structure thisGRIB = new Structure(filename);
 		
