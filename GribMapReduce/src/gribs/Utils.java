@@ -1,35 +1,38 @@
 package gribs;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Arrays;
+
+import org.apache.log4j.Logger;
 
 public class Utils {
 
+	private static final Logger log = Logger.getLogger(Utils.class.getPackage()
+			.getName());
 	
-	
-	public static ArrayList<byte[]> splitGRIB(byte[] data, byte[] pattern)
+	public static void splitGRIB(byte[] data, byte[] pattern,String fileNameString) throws IOException
 	{
-
-		ArrayList<byte[]> result = new ArrayList<byte[]>();
+		
+	
 		int positionStart = 0;
 		int positionEnd = 0;
 		byte[] newdata = data;
+
 		while (true)
 		{
-			newdata = Arrays.copyOfRange(newdata,positionEnd,newdata.length);
-			//System.out.println(newdata.length);
- 		positionEnd = indexOf(newdata, pattern);
+			newdata = Arrays.copyOf(newdata,newdata.length - positionEnd);
+	 		positionEnd = indexOf(newdata, pattern);
 		if (positionEnd>0)
 		{
 			positionEnd = positionEnd + pattern.length;
-			result.add(Arrays.copyOfRange(newdata, positionStart, positionEnd));
+			
+			Decode.BeginDecode(Arrays.copyOfRange(newdata, positionStart, positionEnd),fileNameString);
 		}
 		else
 		break;
 		}
 		
 		
-		return result;
 	}
 	
 	
