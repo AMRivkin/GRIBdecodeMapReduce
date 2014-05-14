@@ -3,12 +3,10 @@ package gribs;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.apache.log4j.Logger;
+
 
 public class Utils {
 
-	private static final Logger log = Logger.getLogger(Utils.class.getPackage()
-			.getName());
 	
 	public static void splitGRIB(byte[] data, byte[] pattern,String fileNameString) throws IOException
 	{
